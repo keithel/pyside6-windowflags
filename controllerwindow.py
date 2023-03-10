@@ -8,13 +8,12 @@ from typing import Optional
 from previewwindow import PreviewWindow
 from enum import Enum
 
-INDIVIDUAL_WIDGET_REG = True
-
 class ControllerWindow(QWidget):
-    def __init__(self, parent = None):
+    def __init__(self, parent = None, pythonic_window_registration: bool = False):
         super().__init__(parent)
 
-        self.previewWindow = PreviewWindow(self)
+        self.pythonic_reg = pythonic_window_registration
+        self.previewWindow = PreviewWindow()
 
         self.createTypeGroupBox()
         self.createHintsGroupBox()
@@ -43,7 +42,17 @@ class ControllerWindow(QWidget):
     @Slot()
     def updatePreview(self) -> None:
         flags = Qt.WindowFlags()
-        if INDIVIDUAL_WIDGET_REG:
+        if self.pythonic_reg:
+            for radioButton, flag in self.typeFlagWidgets:
+                print(f"updatePreview radioButton {radioButton.text()} {flag}")
+                if radioButton.isChecked():
+                    print(f"rb {radioButton.text()} is checked. {flag.value}")
+                    flags = flag
+
+            for checkBox, flag in self.hintFlagWidgets:
+                if checkBox.isChecked():
+                    flags = flags | flag
+        else:
             if self.windowRadioButton.isChecked():
                 print(f"windowRadioButton is checked. {Qt.Window}")
                 flags = Qt.Window
@@ -97,16 +106,6 @@ class ControllerWindow(QWidget):
                 flags = flags | Qt.WindowStaysOnBottomHint
             if self.customizeWindowHintCheckBox.isChecked():
                 flags = flags | Qt.CustomizeWindowHint
-        else:
-            for radioButton, flag in self.typeFlagWidgets:
-                print(f"updatePreview radioButton {radioButton.text()} {flag}")
-                if radioButton.isChecked():
-                    print(f"rb {radioButton.text()} is checked. {flag.value}")
-                    flags = flag
-
-            for checkBox, flag in self.hintFlagWidgets:
-                if checkBox.isChecked():
-                    flags = flags | flag
 
         self.previewWindow.setAndDisplayWindowFlags(flags)
 
@@ -122,7 +121,19 @@ class ControllerWindow(QWidget):
         self.typeGroupBox = QGroupBox("Type")
         layout = QGridLayout()
 
-        if INDIVIDUAL_WIDGET_REG:
+        if self.pythonic_reg:
+            typeFlags: list[Qt.WindowFlags] = [
+                Qt.Window, Qt.Dialog, Qt.Sheet, Qt.Drawer, Qt.Popup, Qt.Tool,
+                Qt.ToolTip, Qt.SplashScreen
+            ]
+            self.typeFlagWidgets: list[tuple[QRadioButton, Qt.WindowFlags]] = [
+                (self.createRadioButton(flag.name), flag) for flag in typeFlags
+            ]
+            self.typeFlagWidgets[0][0].setChecked(True)
+
+            for i, (radioButton, _) in enumerate(self.typeFlagWidgets):
+                layout.addWidget(radioButton, i%3, int(i/3))
+        else:
             self.windowRadioButton = self.createRadioButton("Window");
             self.dialogRadioButton = self.createRadioButton("Dialog");
             self.sheetRadioButton = self.createRadioButton("Sheet");
@@ -141,25 +152,22 @@ class ControllerWindow(QWidget):
             layout.addWidget(self.toolRadioButton, 1, 1)
             layout.addWidget(self.toolTipRadioButton, 2, 1)
             layout.addWidget(self.splashScreenRadioButton, 3, 1)
-        else:
-            typeFlags: list[Qt.WindowFlags] = [
-                Qt.Window, Qt.Dialog, Qt.Sheet, Qt.Drawer, Qt.Popup, Qt.Tool,
-                Qt.ToolTip, Qt.SplashScreen
-            ]
-            self.typeFlagWidgets: list[tuple[QRadioButton, Qt.WindowFlags]] = [
-                (self.createRadioButton(flag.name), flag) for flag in typeFlags
-            ]
-            self.typeFlagWidgets[0][0].setChecked(True)
 
-            for i, (radioButton, _) in enumerate(self.typeFlagWidgets):
-                layout.addWidget(radioButton, i%3, int(i/3))
         self.typeGroupBox.setLayout(layout)
 
     def createHintsGroupBox(self) -> None:
         self.hintsGroupBox = QGroupBox("Hints")
         layout = QGridLayout()
 
-        if INDIVIDUAL_WIDGET_REG:
+        if self.pythonic_reg:
+            self.hintFlagWidgets: list[tuple[QCheckBox, Qt.WindowFlags]] = [
+                (self.createCheckBox(flag.name), flag) for flag in
+                self.previewWindow.hintFlags
+            ]
+
+            for i, (checkBox, _) in enumerate(self.hintFlagWidgets):
+                layout.addWidget(checkBox, i%6, int(i/6))
+        else:
             self.msWindowsFixedSizeDialogCheckBox = self.createCheckBox("MS Windows fixed size dialog")
             self.x11BypassWindowManagerCheckBox = self.createCheckBox("X11 bypass window manager")
             self.framelessWindowCheckBox = self.createCheckBox("Frameless window")
@@ -190,14 +198,6 @@ class ControllerWindow(QWidget):
             layout.addWidget(self.windowStaysOnTopCheckBox, 4, 1)
             layout.addWidget(self.windowStaysOnBottomCheckBox, 5, 1)
             layout.addWidget(self.customizeWindowHintCheckBox, 6, 1)
-        else:
-            self.hintFlagWidgets: list[tuple[QCheckBox, Qt.WindowFlags]] = [
-                (self.createCheckBox(flag.name), flag) for flag in
-                self.previewWindow.hintFlags
-            ]
-
-            for i, (checkBox, _) in enumerate(self.hintFlagWidgets):
-                layout.addWidget(checkBox, i%6, int(i/6))
         self.hintsGroupBox.setLayout(layout)
 
     def createCheckBox(self, text: str) -> QCheckBox:
