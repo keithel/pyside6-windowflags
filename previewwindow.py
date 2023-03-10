@@ -1,10 +1,14 @@
 # Copyright (C) 2023 Keith Kyzivat
 # SPDX-License-Identifier: LicenseRef-Qt-Commercial OR BSD-3-Clause
 
-from PySide6.QtWidgets import QWidget, QTextEdit, QPushButton, QVBoxLayout
+""" Class that previews Qt WindowTypes """
+
+from PySide6.QtWidgets import QWidget, QTextEdit
+from PySide6.QtWidgets import QPushButton, QVBoxLayout
 from PySide6.QtCore import Qt
 
 class PreviewWindow(QWidget):
+    """ Class that previews Qt WindowTypes """
     def __init__(self, parent = None) -> None:
         super().__init__(parent)
         self.textEdit = QTextEdit()

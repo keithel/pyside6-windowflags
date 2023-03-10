@@ -1,14 +1,16 @@
 # Copyright (C) 2023 Keith Kyzivat
 # SPDX-License-Identifier: LicenseRef-Qt-Commercial OR BSD-3-Clause
 
+""" Providing a window to control use of different window flags """
+
 from PySide6.QtCore import Qt, Slot
 from PySide6.QtWidgets import QWidget, QPushButton, QHBoxLayout, QRadioButton
 from PySide6.QtWidgets import QCheckBox, QGroupBox, QGridLayout
-from typing import Optional
 from previewwindow import PreviewWindow
-from enum import Enum
 
 class ControllerWindow(QWidget):
+    """ Class that provies a window to control demonstration of different window
+        flags """
     def __init__(self, parent = None, pythonic_window_registration: bool = False):
         super().__init__(parent)
 
@@ -19,7 +21,7 @@ class ControllerWindow(QWidget):
         self.createHintsGroupBox()
 
         quitButton = QPushButton("&Quit")
-        quitButton.clicked.connect(qApp.quit) # type: ignore[name-defined, attr-defined]
+        quitButton.clicked.connect(qApp.quit) # type: ignore[name-defined,attr-defined] # pylint: disable=undefined-variable
 
         bottomLayout = QHBoxLayout()
         bottomLayout.addStretch()
@@ -36,6 +38,7 @@ class ControllerWindow(QWidget):
 
     @Slot()
     def updatePreview(self) -> None:
+        """ Updates the preview window with selected WindowFlags. """
         flags = Qt.WindowType()
         if self.pythonic_reg:
             for radioButton, flag in self.typeFlagWidgets:
@@ -113,6 +116,7 @@ class ControllerWindow(QWidget):
         self.previewWindow.show()
 
     def createTypeGroupBox(self) -> None:
+        """ Create the window type selection group box. """
         self.typeGroupBox = QGroupBox("Type")
         layout = QGridLayout()
 
@@ -130,13 +134,13 @@ class ControllerWindow(QWidget):
             for i, (radioButton, _) in enumerate(self.typeFlagWidgets):
                 layout.addWidget(radioButton, i%3, int(i/3))
         else:
-            self.windowRadioButton = self.createRadioButton("Window");
-            self.dialogRadioButton = self.createRadioButton("Dialog");
-            self.sheetRadioButton = self.createRadioButton("Sheet");
-            self.drawerRadioButton = self.createRadioButton("Drawer");
-            self.popupRadioButton = self.createRadioButton("Popup");
-            self.toolRadioButton = self.createRadioButton("Tool");
-            self.toolTipRadioButton = self.createRadioButton("Tooltip");
+            self.windowRadioButton = self.createRadioButton("Window")
+            self.dialogRadioButton = self.createRadioButton("Dialog")
+            self.sheetRadioButton = self.createRadioButton("Sheet")
+            self.drawerRadioButton = self.createRadioButton("Drawer")
+            self.popupRadioButton = self.createRadioButton("Popup")
+            self.toolRadioButton = self.createRadioButton("Tool")
+            self.toolTipRadioButton = self.createRadioButton("Tooltip")
             self.splashScreenRadioButton = self.createRadioButton("Splash screen")
             self.windowRadioButton.setChecked(True)
 
@@ -152,6 +156,7 @@ class ControllerWindow(QWidget):
         self.typeGroupBox.setLayout(layout)
 
     def createHintsGroupBox(self) -> None:
+        """ Create the window hints selection group box. """
         self.hintsGroupBox = QGroupBox("Hints")
         layout = QGridLayout()
 
@@ -197,15 +202,18 @@ class ControllerWindow(QWidget):
         self.hintsGroupBox.setLayout(layout)
 
     def createCheckBox(self, text: str) -> QCheckBox:
+        """ Create a checkbox that will update the preview on clicked """
         checkBox = QCheckBox(text)
         checkBox.clicked.connect(self.updatePreview) # type: ignore[attr-defined]
         return checkBox
 
     def logRadioButtonChecked(self, checked):
+        """ print log message when radio button is clicked """
         print(f"Radio button {'checked' if checked else 'not checked'}")
+
     def createRadioButton(self, text: str) -> QRadioButton:
+        """ Create a radio button that will update the preview on clicked """
         radioButton = QRadioButton(text)
         radioButton.clicked.connect(self.updatePreview) # type: ignore[attr-defined]
         radioButton.clicked.connect(self.logRadioButtonChecked) # type: ignore[attr-defined]
         return radioButton
-
