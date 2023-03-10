@@ -207,13 +207,8 @@ class ControllerWindow(QWidget):
         checkBox.clicked.connect(self.updatePreview) # type: ignore[attr-defined]
         return checkBox
 
-    def logRadioButtonChecked(self, checked):
-        """ print log message when radio button is clicked """
-        print(f"Radio button {'checked' if checked else 'not checked'}")
-
     def createRadioButton(self, text: str) -> QRadioButton:
         """ Create a radio button that will update the preview on clicked """
         radioButton = QRadioButton(text)
         radioButton.clicked.connect(self.updatePreview) # type: ignore[attr-defined]
-        radioButton.clicked.connect(self.logRadioButtonChecked) # type: ignore[attr-defined]
         return radioButton
