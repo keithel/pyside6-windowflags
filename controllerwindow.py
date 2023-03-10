@@ -19,7 +19,7 @@ class ControllerWindow(QWidget):
         self.createHintsGroupBox()
 
         quitButton = QPushButton("&Quit")
-        quitButton.clicked.connect(qApp.quit)
+        quitButton.clicked.connect(qApp.quit) # type: ignore[name-defined, attr-defined]
 
         bottomLayout = QHBoxLayout()
         bottomLayout.addStretch()
@@ -34,14 +34,9 @@ class ControllerWindow(QWidget):
         self.setWindowTitle("Window Flags")
         self.updatePreview()
 
-        self.typeFlagWidgets: Optional[list[tuple[QRadioButton, Qt.WindowFlags]]] = []
-        self.hintFlagWidgets: Optional[list[tuple[QCheckBox, Qt.WindowFlags]]] = []
-        self.typeGroupBox = None
-        self.hintsGroupBox = None
-
     @Slot()
     def updatePreview(self) -> None:
-        flags = Qt.WindowFlags()
+        flags = Qt.WindowType()
         if self.pythonic_reg:
             for radioButton, flag in self.typeFlagWidgets:
                 print(f"updatePreview radioButton {radioButton.text()} {flag}")
@@ -54,58 +49,58 @@ class ControllerWindow(QWidget):
                     flags = flags | flag
         else:
             if self.windowRadioButton.isChecked():
-                print(f"windowRadioButton is checked. {Qt.Window}")
-                flags = Qt.Window
+                print(f"windowRadioButton is checked. {Qt.WindowType.Window}")
+                flags = Qt.WindowType.Window
             if self.dialogRadioButton.isChecked():
-                print(f"dialogRadioButton is checked. {Qt.Dialog}")
-                flags = Qt.Dialog
+                print(f"dialogRadioButton is checked. {Qt.WindowType.Dialog}")
+                flags = Qt.WindowType.Dialog
             if self.sheetRadioButton.isChecked():
-                print(f"sheetRadioButton is checked. {Qt.Dialog}")
-                flags = Qt.Sheet
+                print(f"sheetRadioButton is checked. {Qt.WindowType.Dialog}")
+                flags = Qt.WindowType.Sheet
             if self.drawerRadioButton.isChecked():
-                print(f"drawerRadioButton is checked. {Qt.Dialog}")
-                flags = Qt.Drawer
+                print(f"drawerRadioButton is checked. {Qt.WindowType.Dialog}")
+                flags = Qt.WindowType.Drawer
             if self.popupRadioButton.isChecked():
-                print(f"popupRadioButton is checked. {Qt.Dialog}")
-                flags = Qt.Popup
+                print(f"popupRadioButton is checked. {Qt.WindowType.Dialog}")
+                flags = Qt.WindowType.Popup
             if self.toolRadioButton.isChecked():
-                print(f"toolRadioButton is checked. {Qt.Dialog}")
-                flags = Qt.Tool
+                print(f"toolRadioButton is checked. {Qt.WindowType.Dialog}")
+                flags = Qt.WindowType.Tool
             if self.toolTipRadioButton.isChecked():
-                print(f"toolTipRadioButton is checked. {Qt.Dialog}")
-                flags = Qt.ToolTip
+                print(f"toolTipRadioButton is checked. {Qt.WindowType.Dialog}")
+                flags = Qt.WindowType.ToolTip
             if self.splashScreenRadioButton.isChecked():
-                print(f"splashScreenRadioButton is checked. {Qt.Dialog}")
-                flags = Qt.SplashScreen
+                print(f"splashScreenRadioButton is checked. {Qt.WindowType.Dialog}")
+                flags = Qt.WindowType.SplashScreen
 
             if self.msWindowsFixedSizeDialogCheckBox.isChecked():
-                flags = flags | Qt.MSWindowsFixedSizeDialogHint
+                flags = flags | Qt.WindowType.MSWindowsFixedSizeDialogHint
             if self.x11BypassWindowManagerCheckBox.isChecked():
-                flags = flags | Qt.X11BypassWindowManagerHint
+                flags = flags | Qt.WindowType.X11BypassWindowManagerHint
             if self.framelessWindowCheckBox.isChecked():
-                flags = flags | Qt.FramelessWindowHint
+                flags = flags | Qt.WindowType.FramelessWindowHint
             if self.windowNoShadowCheckBox.isChecked():
-                flags = flags | Qt.NoDropShadowWindowHint
+                flags = flags | Qt.WindowType.NoDropShadowWindowHint
             if self.windowTitleCheckBox.isChecked():
-                flags = flags | Qt.WindowTitleHint
+                flags = flags | Qt.WindowType.WindowTitleHint
             if self.windowSystemMenuCheckBox.isChecked():
-                flags = flags | Qt.WindowSystemMenuHint
+                flags = flags | Qt.WindowType.WindowSystemMenuHint
             if self.windowMinimizeButtonCheckBox.isChecked():
-                flags = flags | Qt.WindowMinimizeButtonHint
+                flags = flags | Qt.WindowType.WindowMinimizeButtonHint
             if self.windowMaximizeButtonCheckBox.isChecked():
-                flags = flags | Qt.WindowMaximizeButtonHint
+                flags = flags | Qt.WindowType.WindowMaximizeButtonHint
             if self.windowCloseButtonCheckBox.isChecked():
-                flags = flags | Qt.WindowCloseButtonHint
+                flags = flags | Qt.WindowType.WindowCloseButtonHint
             if self.windowContextHelpButtonCheckBox.isChecked():
-                flags = flags | Qt.WindowContextHelpButtonHint
+                flags = flags | Qt.WindowType.WindowContextHelpButtonHint
             if self.windowShadeButtonCheckBox.isChecked():
-                flags = flags | Qt.WindowShadeButtonHint
+                flags = flags | Qt.WindowType.WindowShadeButtonHint
             if self.windowStaysOnTopCheckBox.isChecked():
-                flags = flags | Qt.WindowStaysOnTopHint
+                flags = flags | Qt.WindowType.WindowStaysOnTopHint
             if self.windowStaysOnBottomCheckBox.isChecked():
-                flags = flags | Qt.WindowStaysOnBottomHint
+                flags = flags | Qt.WindowType.WindowStaysOnBottomHint
             if self.customizeWindowHintCheckBox.isChecked():
-                flags = flags | Qt.CustomizeWindowHint
+                flags = flags | Qt.WindowType.CustomizeWindowHint
 
         self.previewWindow.setAndDisplayWindowFlags(flags)
 
@@ -122,11 +117,12 @@ class ControllerWindow(QWidget):
         layout = QGridLayout()
 
         if self.pythonic_reg:
-            typeFlags: list[Qt.WindowFlags] = [
-                Qt.Window, Qt.Dialog, Qt.Sheet, Qt.Drawer, Qt.Popup, Qt.Tool,
-                Qt.ToolTip, Qt.SplashScreen
+            typeFlags: list[Qt.WindowType] = [
+                Qt.WindowType.Window, Qt.WindowType.Dialog, Qt.WindowType.Sheet,
+                Qt.WindowType.Drawer, Qt.WindowType.Popup, Qt.WindowType.Tool,
+                Qt.WindowType.ToolTip, Qt.WindowType.SplashScreen
             ]
-            self.typeFlagWidgets: list[tuple[QRadioButton, Qt.WindowFlags]] = [
+            self.typeFlagWidgets: list[tuple[QRadioButton, Qt.WindowType]] = [
                 (self.createRadioButton(flag.name), flag) for flag in typeFlags
             ]
             self.typeFlagWidgets[0][0].setChecked(True)
@@ -160,7 +156,7 @@ class ControllerWindow(QWidget):
         layout = QGridLayout()
 
         if self.pythonic_reg:
-            self.hintFlagWidgets: list[tuple[QCheckBox, Qt.WindowFlags]] = [
+            self.hintFlagWidgets: list[tuple[QCheckBox, Qt.WindowType]] = [
                 (self.createCheckBox(flag.name), flag) for flag in
                 self.previewWindow.hintFlags
             ]
@@ -202,14 +198,14 @@ class ControllerWindow(QWidget):
 
     def createCheckBox(self, text: str) -> QCheckBox:
         checkBox = QCheckBox(text)
-        checkBox.clicked.connect(self.updatePreview)
+        checkBox.clicked.connect(self.updatePreview) # type: ignore[attr-defined]
         return checkBox
 
     def logRadioButtonChecked(self, checked):
         print(f"Radio button {'checked' if checked else 'not checked'}")
     def createRadioButton(self, text: str) -> QRadioButton:
         radioButton = QRadioButton(text)
-        radioButton.clicked.connect(self.updatePreview)
-        radioButton.clicked.connect(self.logRadioButtonChecked)
+        radioButton.clicked.connect(self.updatePreview) # type: ignore[attr-defined]
+        radioButton.clicked.connect(self.logRadioButtonChecked) # type: ignore[attr-defined]
         return radioButton
 
